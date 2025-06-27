@@ -434,6 +434,8 @@ RECENT_TILENUM_SIZE = 128
 
  _m_ dma_blocks_remaining,1
 
+ _m_ hdma_active,1
+
  _m_ ui_border_cnt_bic,4
  _m_ ui_border_cnt_orr,4
  _m_ ui_border_scroll2,4

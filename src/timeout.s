@@ -393,6 +393,9 @@ call_dodma:
     ldr r1,=_dma_blocks_total
     strb r2,[r1]
     
+    @ Clear HDMA active flag
+    strb_ r2,hdma_active
+    
 
     @ Finally, fall through and continue execution
 _checkScanlineIRQ:

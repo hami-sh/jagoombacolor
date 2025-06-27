@@ -104,6 +104,9 @@ SaveIo:
 	ldrb_ r0,sound_shadow+8
 	strb r0,[r3,#0x1E]
 	
+	@ Save hdma_active state in unused FF55 position
+	ldrb_ r0,hdma_active
+	strb r0,[r3,#0x55]
 	
 	ldmfd sp!,{r3-r11,lr}
 	mov r0,#0x100
@@ -206,6 +209,9 @@ LoadIo:
 	bl_long FF53_W
 	ldrb r0,[r3,#0x54]
 	bl_long FF54_W
+	@ Load hdma_active state (stored in unused FF55 position)
+	ldrb r0,[r3,#0x55]
+	strb_ r0,hdma_active
 	
 	@palette index
 	ldrb r0,[r3,#0x68]
@@ -265,6 +271,12 @@ AfterLoadState:
 	ldr r0,=vram_packets_dirty
 	mov r2,#132
 	bl memset32_
+	
+	@ Clear HDMA state variables
+	mov r0,#0
+	strb_ r0,dma_blocks_total
+	strb_ r0,dma_blocks_remaining
+	@ hdma_active is loaded from save state, don't clear it here
 	
 	@load banks
 	ldr_ r0,bank0

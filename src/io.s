@@ -795,14 +795,18 @@ FF55_W:	@HDMA5
 @	bxne lr
 	bic r0,r0,#0x80
 	
-	@immediately steal cycles if it's not HDMA
-	bne start_hdma
-    @ General DMA code below
-    @ Write HDMA cancel block here
+	@Check if bit 7 is 0 (General Purpose DMA) or 1 (H-Blank DMA)
+	beq general_dma  @ If bit 7 was 0, do general purpose DMA
+    
+    @ Bit 7 was 1, check if we need to cancel existing HDMA
     ldrb_ r1,dma_blocks_total
     cmp r1,#0
-    beq general_dma
+    beq start_hdma  @ No existing HDMA, start new H-Blank DMA
 cancel_hdma:
+    @ HDMA cancellation
+    mov r1,#0
+    strb_ r1,hdma_active  @ Clear HDMA active flag
+    
     stmfd sp!,{r0-r12,lr}
     ldrb_ r0,dma_blocks_total
     ldrb_ r1,dma_blocks_remaining
@@ -814,8 +818,10 @@ cancel_hdma:
     ldr r1,=_dma_blocks_total
     mov r2,#0x00
     strb r2,[r1]
+    ldr r1,=_dma_blocks_remaining  
+    strb r2,[r1]
     
-    bx lr  @ I'm not sure if this is right or not
+    bx lr
 general_dma:
     @ Steal cycles
 	ldr_ r1,cyclesperscanline
@@ -825,12 +831,21 @@ general_dma:
 	mov r1,r1,lsl#(3 + CYC_SHIFT)
 	sub cycles,cycles,r1
     
+    @ Set HDMA as active for general purpose DMA
+    mov r1,#1
+    strb_ r1,hdma_active
+    
     @ Immediately call DoDma
     stmfd sp!,{r0-r12,lr}
 	add r0,r0,#1
 	mov r0,r0,lsl#4
 	blx_long DoDma
-	ldmfd sp!,{r0-r12,pc}
+	ldmfd sp!,{r0-r12,lr}
+	
+	@ Clear HDMA active flag after general purpose DMA
+	mov r1,#0
+	strb_ r1,hdma_active
+	mov pc,lr
     
 start_hdma:
     ldrb_ r1,dmamode
@@ -844,8 +859,26 @@ start_hdma:
     strb r0,[r1]
     strb r0,[r2]
     
+    @ Set HDMA as active for H-Blank DMA
+    mov r1,#1
+    strb_ r1,hdma_active
+    
 	bx lr
-	
+
+FF55_R:	@HDMA5
+    ldrb_ r0,hdma_active
+    cmp r0,#0
+    bne hdma_is_active
+    @ HDMA is inactive
+    mov r0,#0xFF  @ Return 0xFF when inactive
+    mov pc,lr
+hdma_is_active:
+    @ HDMA is active
+    ldrb_ r0,dma_blocks_remaining
+    sub r0,r0,#1
+    and r0,r0,#0x7F  @ Clear bit 7, keep only lower 7 bits
+	mov pc,lr
+
 @r0 = dest, r1 = src, r2 = byteCount, r3 = dirtyMapBits
 	global_func copy_map_and_compare
 copy_map_and_compare:
@@ -1134,6 +1167,9 @@ IO_reset:
 	strb_ r0,stctrl
 	str_ r0,timercounter
 	str_ r0,timermodulo
+	strb_ r0,hdma_active  @ Initialize HDMA active flag to 0
+	strb_ r0,dma_blocks_total  @ Initialize DMA blocks total to 0
+	strb_ r0,dma_blocks_remaining  @ Initialize DMA blocks remaining to 0
 
 
 	ldrb_ r0,sgbmode
@@ -1301,10 +1337,6 @@ FF53_R:	@HDMA3
 	mov pc,lr
 FF54_R:	@HDMA4
 	ldrb_ r0,dma_dest
-	mov pc,lr
-FF55_R:	@HDMA5
-    ldrb_ r0,dma_blocks_remaining
-    sub r0,r0,#1
 	mov pc,lr
 
 
