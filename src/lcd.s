@@ -1649,7 +1649,8 @@ canary_value_doesnt_match:
 force_ui_at_top:
 	@force first 8 scnalines to contain UI
 	@part 1 - save old, find out NEW
-	adr_ r4,ui_border_cnt_bic
+	ldr r4,=ui_border_cnt_bic
+	add r4,r4,globalptr
 	ldmia r4,{r0-r3}
 	stmfd sp!,{r0-r4,lr}
 	ldr_ r1,_ui_border_screen
@@ -2185,7 +2186,8 @@ apply16:
 
 	.pushsection .text
 move_ui_2:
-	adr_ r2,ui_border_cnt_bic
+	ldr r2,=ui_border_cnt_bic
+	add r2,r2,globalptr
 	ldmia r2,{r4-r7}
 @	ldr r4,ui_border_cnt_bic
 @	ldr r5,ui_border_cnt_orr
@@ -2271,7 +2273,8 @@ _add_ui_border_2:
 	.pushsection .text
 _add_ui_border_4:
 	@now apply the settings to the active (to be displayed) scanline buffers
-	adr_ r12,ui_border_cnt_bic
+	ldr r12,=ui_border_cnt_bic
+	add r12,r12,globalptr
 	ldmia r12,{r0-r3}
 	stmfd sp!,{r0-r3,lr}		@push old
 	ldr_ r1,_ui_border_screen

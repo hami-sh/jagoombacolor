@@ -334,7 +334,9 @@ _E4:@	Shantae Speed Hack (replaces 9 instructions)
 	ldr_ r1,memmap_tbl+0x0D * 4
 	add r1,r1,gb_bc,lsr#16
 	ldrb r0,[r1,#0x4]
-	adr_ r2,xgb_hram - 0x80
+	ldr r2,=xgb_hram
+	add r2,globalptr,r2
+	sub r2,r2,#0x80
 	strb r0,[r2,#0x91]
 	strb_ r0,mapperdata
 	ldrb gb_de,[r1,#2]
@@ -452,7 +454,9 @@ _D3:@	Shantae Speed Hack (replaces 8 instructions)
 	strb r0,[r1,#2]!
 	mov r0,r0,lsr#8
 	strb r0,[r1,#1]
-	adr_ r2,xgb_hram - 0x80
+	ldr r2,=xgb_hram
+	add r2,globalptr,r2
+	sub r2,r2,#0x80
 	ldrb r0,[r2,#0x91]
 	strb r0,[r1,#2]
 	add gb_pc,gb_pc,#(0x1383 - 0x1378 - 1) @10

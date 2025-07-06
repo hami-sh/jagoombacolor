@@ -23,11 +23,23 @@
 	.endm
 
 	.macro ldr_ reg,label
+	.if \label > 4095 || \label < -4095
+	ldr \reg, =\label
+	add \reg, globalptr, \reg
+	ldr \reg, [\reg]
+	.else
 	ldr \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro ldrb_ reg,label
+	.if \label > 4095 || \label < -4095
+	ldr \reg, =\label
+	add \reg, globalptr, \reg
+	ldrb \reg, [\reg]
+	.else
 	ldrb \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro ldrh_ reg,label
@@ -35,11 +47,23 @@
 	.endm
 	
 	.macro str_ reg,label
+	.if \label > 4095 || \label < -4095
+	ldr r12, =\label
+	add r12, globalptr, r12
+	str \reg, [r12]
+	.else
 	str \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strb_ reg,label
+	.if \label > 4095 || \label < -4095
+	ldr r12, =\label
+	add r12, globalptr, r12
+	strb \reg, [r12]
+	.else
 	strb \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strh_ reg,label
@@ -103,69 +127,165 @@
 
 
 	.macro ldrmi_ reg,label
+	.if \label > 4095 || \label < -4095
+	addmi \reg, globalptr, #((\label) & 0xFFF00000)
+	addmi \reg, \reg, #((\label) & 0x000FFF00)
+	ldrmi \reg, [\reg, #((\label) & 0x000000FF)]
+	.else
 	ldrmi \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro ldrmib_ reg,label
+	.if \label > 4095 || \label < -4095
+	addmi \reg, globalptr, #((\label) & 0xFFF00000)
+	addmi \reg, \reg, #((\label) & 0x000FFF00)
+	ldrmib \reg, [\reg, #((\label) & 0x000000FF)]
+	.else
 	ldrmib \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strmi_ reg,label
+	.if \label > 4095 || \label < -4095
+	addmi r12, globalptr, #((\label) & 0xFFF00000)
+	addmi r12, r12, #((\label) & 0x000FFF00)
+	strmi \reg, [r12, #((\label) & 0x000000FF)]
+	.else
 	strmi \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strmib_ reg,label
+	.if \label > 4095 || \label < -4095
+	addmi r12, globalptr, #((\label) & 0xFFF00000)
+	addmi r12, r12, #((\label) & 0x000FFF00)
+	strmib \reg, [r12, #((\label) & 0x000000FF)]
+	.else
 	strmib \reg,[globalptr,#\label]
+	.endif
 	.endm
 
 	.macro ldrpl_ reg,label
+	.if \label > 4095 || \label < -4095
+	addpl \reg, globalptr, #((\label) & 0xFFF00000)
+	addpl \reg, \reg, #((\label) & 0x000FFF00)
+	ldrpl \reg, [\reg, #((\label) & 0x000000FF)]
+	.else
 	ldrpl \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro ldrplb_ reg,label
+	.if \label > 4095 || \label < -4095
+	addpl \reg, globalptr, #((\label) & 0xFFF00000)
+	addpl \reg, \reg, #((\label) & 0x000FFF00)
+	ldrplb \reg, [\reg, #((\label) & 0x000000FF)]
+	.else
 	ldrplb \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strpl_ reg,label
+	.if \label > 4095 || \label < -4095
+	addpl r12, globalptr, #((\label) & 0xFFF00000)
+	addpl r12, r12, #((\label) & 0x000FFF00)
+	strpl \reg, [r12, #((\label) & 0x000000FF)]
+	.else
 	strpl \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strplb_ reg,label
+	.if \label > 4095 || \label < -4095
+	addpl r12, globalptr, #((\label) & 0xFFF00000)
+	addpl r12, r12, #((\label) & 0x000FFF00)
+	strplb \reg, [r12, #((\label) & 0x000000FF)]
+	.else
 	strplb \reg,[globalptr,#\label]
+	.endif
 	.endm
 
 
 	.macro ldrgt_ reg,label
+	.if \label > 4095 || \label < -4095
+	addgt \reg, globalptr, #((\label) & 0xFFF00000)
+	addgt \reg, \reg, #((\label) & 0x000FFF00)
+	ldrgt \reg, [\reg, #((\label) & 0x000000FF)]
+	.else
 	ldrgt \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro ldrgtb_ reg,label
+	.if \label > 4095 || \label < -4095
+	addgt \reg, globalptr, #((\label) & 0xFFF00000)
+	addgt \reg, \reg, #((\label) & 0x000FFF00)
+	ldrgtb \reg, [\reg, #((\label) & 0x000000FF)]
+	.else
 	ldrgtb \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strgt_ reg,label
+	.if \label > 4095 || \label < -4095
+	addgt r12, globalptr, #((\label) & 0xFFF00000)
+	addgt r12, r12, #((\label) & 0x000FFF00)
+	strgt \reg, [r12, #((\label) & 0x000000FF)]
+	.else
 	strgt \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strgtb_ reg,label
+	.if \label > 4095 || \label < -4095
+	addgt r12, globalptr, #((\label) & 0xFFF00000)
+	addgt r12, r12, #((\label) & 0x000FFF00)
+	strgtb \reg, [r12, #((\label) & 0x000000FF)]
+	.else
 	strgtb \reg,[globalptr,#\label]
+	.endif
 	.endm
 
 
 	.macro ldrge_ reg,label
+	.if \label > 4095 || \label < -4095
+	addge \reg, globalptr, #((\label) & 0xFFF00000)
+	addge \reg, \reg, #((\label) & 0x000FFF00)
+	ldrge \reg, [\reg, #((\label) & 0x000000FF)]
+	.else
 	ldrge \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro ldrgeb_ reg,label
+	.if \label > 4095 || \label < -4095
+	addge \reg, globalptr, #((\label) & 0xFFF00000)
+	addge \reg, \reg, #((\label) & 0x000FFF00)
+	ldrgeb \reg, [\reg, #((\label) & 0x000000FF)]
+	.else
 	ldrgeb \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strge_ reg,label
+	.if \label > 4095 || \label < -4095
+	addge r12, globalptr, #((\label) & 0xFFF00000)
+	addge r12, r12, #((\label) & 0x000FFF00)
+	strge \reg, [r12, #((\label) & 0x000000FF)]
+	.else
 	strge \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strgeb_ reg,label
+	.if \label > 4095 || \label < -4095
+	addge r12, globalptr, #((\label) & 0xFFF00000)
+	addge r12, r12, #((\label) & 0x000FFF00)
+	strgeb \reg, [r12, #((\label) & 0x000000FF)]
+	.else
 	strgeb \reg,[globalptr,#\label]
+	.endif
 	.endm
 
 
@@ -187,41 +307,93 @@
 
 
 	.macro ldrle_ reg,label
+	.if \label > 4095 || \label < -4095
+	addle \reg, globalptr, #((\label) & 0xFFF00000)
+	addle \reg, \reg, #((\label) & 0x000FFF00)
+	ldrle \reg, [\reg, #((\label) & 0x000000FF)]
+	.else
 	ldrle \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro ldrleb_ reg,label
+	.if \label > 4095 || \label < -4095
+	addle \reg, globalptr, #((\label) & 0xFFF00000)
+	addle \reg, \reg, #((\label) & 0x000FFF00)
+	ldrleb \reg, [\reg, #((\label) & 0x000000FF)]
+	.else
 	ldrleb \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strle_ reg,label
+	.if \label > 4095 || \label < -4095
+	addle r12, globalptr, #((\label) & 0xFFF00000)
+	addle r12, r12, #((\label) & 0x000FFF00)
+	strle \reg, [r12, #((\label) & 0x000000FF)]
+	.else
 	strle \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strleb_ reg,label
+	.if \label > 4095 || \label < -4095
+	addle r12, globalptr, #((\label) & 0xFFF00000)
+	addle r12, r12, #((\label) & 0x000FFF00)
+	strleb \reg, [r12, #((\label) & 0x000000FF)]
+	.else
 	strleb \reg,[globalptr,#\label]
+	.endif
 	.endm
 
 
 	.macro ldrlo_ reg,label
+	.if \label > 4095 || \label < -4095
+	addlo \reg, globalptr, #((\label) & 0xFFF00000)
+	addlo \reg, \reg, #((\label) & 0x000FFF00)
+	ldrlo \reg, [\reg, #((\label) & 0x000000FF)]
+	.else
 	ldrlo \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro ldrlob_ reg,label
+	.if \label > 4095 || \label < -4095
+	addlo \reg, globalptr, #((\label) & 0xFFF00000)
+	addlo \reg, \reg, #((\label) & 0x000FFF00)
+	ldrlob \reg, [\reg, #((\label) & 0x000000FF)]
+	.else
 	ldrlob \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strlo_ reg,label
+	.if \label > 4095 || \label < -4095
+	addlo r12, globalptr, #((\label) & 0xFFF00000)
+	addlo r12, r12, #((\label) & 0x000FFF00)
+	strlo \reg, [r12, #((\label) & 0x000000FF)]
+	.else
 	strlo \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 	.macro strlob_ reg,label
+	.if \label > 4095 || \label < -4095
+	addlo r12, globalptr, #((\label) & 0xFFF00000)
+	addlo r12, r12, #((\label) & 0x000FFF00)
+	strlob \reg, [r12, #((\label) & 0x000000FF)]
+	.else
 	strlob \reg,[globalptr,#\label]
+	.endif
 	.endm
 	
 
 	.macro adr_ reg,label
+	.if \label > 4095 || \label < -4095
+	adrl_ \reg, \label
+	.else
 	add \reg,globalptr,#\label
+	.endif
 	.endm
 	
 	.macro adrl_ reg,label
